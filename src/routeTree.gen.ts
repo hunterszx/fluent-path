@@ -13,6 +13,11 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AlunoRouteImport } from './routes/aluno'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AlunoIndexRouteImport } from './routes/aluno.index'
+import { Route as AlunoProgressoRouteImport } from './routes/aluno.progresso'
+import { Route as AlunoPerfilRouteImport } from './routes/aluno.perfil'
+import { Route as AlunoHistoricoRouteImport } from './routes/aluno.historico'
+import { Route as AlunoFlashcardsRouteImport } from './routes/aluno.flashcards'
+import { Route as AlunoAulasRouteImport } from './routes/aluno.aulas'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -34,16 +39,51 @@ const AlunoIndexRoute = AlunoIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AlunoRoute,
 } as any)
+const AlunoProgressoRoute = AlunoProgressoRouteImport.update({
+  id: '/progresso',
+  path: '/progresso',
+  getParentRoute: () => AlunoRoute,
+} as any)
+const AlunoPerfilRoute = AlunoPerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => AlunoRoute,
+} as any)
+const AlunoHistoricoRoute = AlunoHistoricoRouteImport.update({
+  id: '/historico',
+  path: '/historico',
+  getParentRoute: () => AlunoRoute,
+} as any)
+const AlunoFlashcardsRoute = AlunoFlashcardsRouteImport.update({
+  id: '/flashcards',
+  path: '/flashcards',
+  getParentRoute: () => AlunoRoute,
+} as any)
+const AlunoAulasRoute = AlunoAulasRouteImport.update({
+  id: '/aulas',
+  path: '/aulas',
+  getParentRoute: () => AlunoRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/aluno': typeof AlunoRouteWithChildren
   '/auth': typeof AuthRoute
+  '/aluno/aulas': typeof AlunoAulasRoute
+  '/aluno/flashcards': typeof AlunoFlashcardsRoute
+  '/aluno/historico': typeof AlunoHistoricoRoute
+  '/aluno/perfil': typeof AlunoPerfilRoute
+  '/aluno/progresso': typeof AlunoProgressoRoute
   '/aluno/': typeof AlunoIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/aluno/aulas': typeof AlunoAulasRoute
+  '/aluno/flashcards': typeof AlunoFlashcardsRoute
+  '/aluno/historico': typeof AlunoHistoricoRoute
+  '/aluno/perfil': typeof AlunoPerfilRoute
+  '/aluno/progresso': typeof AlunoProgressoRoute
   '/aluno': typeof AlunoIndexRoute
 }
 export interface FileRoutesById {
@@ -51,14 +91,46 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/aluno': typeof AlunoRouteWithChildren
   '/auth': typeof AuthRoute
+  '/aluno/aulas': typeof AlunoAulasRoute
+  '/aluno/flashcards': typeof AlunoFlashcardsRoute
+  '/aluno/historico': typeof AlunoHistoricoRoute
+  '/aluno/perfil': typeof AlunoPerfilRoute
+  '/aluno/progresso': typeof AlunoProgressoRoute
   '/aluno/': typeof AlunoIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/aluno' | '/auth' | '/aluno/'
+  fullPaths:
+    | '/'
+    | '/aluno'
+    | '/auth'
+    | '/aluno/aulas'
+    | '/aluno/flashcards'
+    | '/aluno/historico'
+    | '/aluno/perfil'
+    | '/aluno/progresso'
+    | '/aluno/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/aluno'
-  id: '__root__' | '/' | '/aluno' | '/auth' | '/aluno/'
+  to:
+    | '/'
+    | '/auth'
+    | '/aluno/aulas'
+    | '/aluno/flashcards'
+    | '/aluno/historico'
+    | '/aluno/perfil'
+    | '/aluno/progresso'
+    | '/aluno'
+  id:
+    | '__root__'
+    | '/'
+    | '/aluno'
+    | '/auth'
+    | '/aluno/aulas'
+    | '/aluno/flashcards'
+    | '/aluno/historico'
+    | '/aluno/perfil'
+    | '/aluno/progresso'
+    | '/aluno/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -97,14 +169,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlunoIndexRouteImport
       parentRoute: typeof AlunoRoute
     }
+    '/aluno/progresso': {
+      id: '/aluno/progresso'
+      path: '/progresso'
+      fullPath: '/aluno/progresso'
+      preLoaderRoute: typeof AlunoProgressoRouteImport
+      parentRoute: typeof AlunoRoute
+    }
+    '/aluno/perfil': {
+      id: '/aluno/perfil'
+      path: '/perfil'
+      fullPath: '/aluno/perfil'
+      preLoaderRoute: typeof AlunoPerfilRouteImport
+      parentRoute: typeof AlunoRoute
+    }
+    '/aluno/historico': {
+      id: '/aluno/historico'
+      path: '/historico'
+      fullPath: '/aluno/historico'
+      preLoaderRoute: typeof AlunoHistoricoRouteImport
+      parentRoute: typeof AlunoRoute
+    }
+    '/aluno/flashcards': {
+      id: '/aluno/flashcards'
+      path: '/flashcards'
+      fullPath: '/aluno/flashcards'
+      preLoaderRoute: typeof AlunoFlashcardsRouteImport
+      parentRoute: typeof AlunoRoute
+    }
+    '/aluno/aulas': {
+      id: '/aluno/aulas'
+      path: '/aulas'
+      fullPath: '/aluno/aulas'
+      preLoaderRoute: typeof AlunoAulasRouteImport
+      parentRoute: typeof AlunoRoute
+    }
   }
 }
 
 interface AlunoRouteChildren {
+  AlunoAulasRoute: typeof AlunoAulasRoute
+  AlunoFlashcardsRoute: typeof AlunoFlashcardsRoute
+  AlunoHistoricoRoute: typeof AlunoHistoricoRoute
+  AlunoPerfilRoute: typeof AlunoPerfilRoute
+  AlunoProgressoRoute: typeof AlunoProgressoRoute
   AlunoIndexRoute: typeof AlunoIndexRoute
 }
 
 const AlunoRouteChildren: AlunoRouteChildren = {
+  AlunoAulasRoute: AlunoAulasRoute,
+  AlunoFlashcardsRoute: AlunoFlashcardsRoute,
+  AlunoHistoricoRoute: AlunoHistoricoRoute,
+  AlunoPerfilRoute: AlunoPerfilRoute,
+  AlunoProgressoRoute: AlunoProgressoRoute,
   AlunoIndexRoute: AlunoIndexRoute,
 }
 
@@ -118,3 +235,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
