@@ -12,9 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProfessorRouteImport } from './routes/professor'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AlunoRouteImport } from './routes/aluno'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfessorIndexRouteImport } from './routes/professor.index'
 import { Route as AlunoIndexRouteImport } from './routes/aluno.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProfessorHistoricoRouteImport } from './routes/professor.historico'
 import { Route as ProfessorFlashcardsRouteImport } from './routes/professor.flashcards'
 import { Route as ProfessorBillingRouteImport } from './routes/professor.billing'
@@ -24,7 +26,15 @@ import { Route as AlunoPerfilRouteImport } from './routes/aluno.perfil'
 import { Route as AlunoHistoricoRouteImport } from './routes/aluno.historico'
 import { Route as AlunoFlashcardsRouteImport } from './routes/aluno.flashcards'
 import { Route as AlunoAulasRouteImport } from './routes/aluno.aulas'
+import { Route as AdminUsuariosRouteImport } from './routes/admin.usuarios'
+import { Route as AdminRelatoriosRouteImport } from './routes/admin.relatorios'
+import { Route as AdminProfessoresRouteImport } from './routes/admin.professores'
+import { Route as AdminPagamentosRouteImport } from './routes/admin.pagamentos'
+import { Route as AdminModeracaoRouteImport } from './routes/admin.moderacao'
+import { Route as AdminFlashcardsRouteImport } from './routes/admin.flashcards'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin.configuracoes'
+import { Route as AdminAulasRouteImport } from './routes/admin.aulas'
+import { Route as AdminAssinaturasRouteImport } from './routes/admin.assinaturas'
 
 const ProfessorRoute = ProfessorRouteImport.update({
   id: '/professor',
@@ -41,6 +51,11 @@ const AlunoRoute = AlunoRouteImport.update({
   path: '/aluno',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -55,6 +70,11 @@ const AlunoIndexRoute = AlunoIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AlunoRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const ProfessorHistoricoRoute = ProfessorHistoricoRouteImport.update({
   id: '/historico',
@@ -101,18 +121,67 @@ const AlunoAulasRoute = AlunoAulasRouteImport.update({
   path: '/aulas',
   getParentRoute: () => AlunoRoute,
 } as any)
+const AdminUsuariosRoute = AdminUsuariosRouteImport.update({
+  id: '/usuarios',
+  path: '/usuarios',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminRelatoriosRoute = AdminRelatoriosRouteImport.update({
+  id: '/relatorios',
+  path: '/relatorios',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProfessoresRoute = AdminProfessoresRouteImport.update({
+  id: '/professores',
+  path: '/professores',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPagamentosRoute = AdminPagamentosRouteImport.update({
+  id: '/pagamentos',
+  path: '/pagamentos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminModeracaoRoute = AdminModeracaoRouteImport.update({
+  id: '/moderacao',
+  path: '/moderacao',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFlashcardsRoute = AdminFlashcardsRouteImport.update({
+  id: '/flashcards',
+  path: '/flashcards',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminConfiguracoesRoute = AdminConfiguracoesRouteImport.update({
-  id: '/admin/configuracoes',
-  path: '/admin/configuracoes',
-  getParentRoute: () => rootRouteImport,
+  id: '/configuracoes',
+  path: '/configuracoes',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAulasRoute = AdminAulasRouteImport.update({
+  id: '/aulas',
+  path: '/aulas',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAssinaturasRoute = AdminAssinaturasRouteImport.update({
+  id: '/assinaturas',
+  path: '/assinaturas',
+  getParentRoute: () => AdminRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/aluno': typeof AlunoRouteWithChildren
   '/auth': typeof AuthRoute
   '/professor': typeof ProfessorRouteWithChildren
+  '/admin/assinaturas': typeof AdminAssinaturasRoute
+  '/admin/aulas': typeof AdminAulasRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
+  '/admin/flashcards': typeof AdminFlashcardsRoute
+  '/admin/moderacao': typeof AdminModeracaoRoute
+  '/admin/pagamentos': typeof AdminPagamentosRoute
+  '/admin/professores': typeof AdminProfessoresRoute
+  '/admin/relatorios': typeof AdminRelatoriosRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
   '/aluno/aulas': typeof AlunoAulasRoute
   '/aluno/flashcards': typeof AlunoFlashcardsRoute
   '/aluno/historico': typeof AlunoHistoricoRoute
@@ -122,13 +191,22 @@ export interface FileRoutesByFullPath {
   '/professor/billing': typeof ProfessorBillingRoute
   '/professor/flashcards': typeof ProfessorFlashcardsRoute
   '/professor/historico': typeof ProfessorHistoricoRoute
+  '/admin/': typeof AdminIndexRoute
   '/aluno/': typeof AlunoIndexRoute
   '/professor/': typeof ProfessorIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/admin/assinaturas': typeof AdminAssinaturasRoute
+  '/admin/aulas': typeof AdminAulasRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
+  '/admin/flashcards': typeof AdminFlashcardsRoute
+  '/admin/moderacao': typeof AdminModeracaoRoute
+  '/admin/pagamentos': typeof AdminPagamentosRoute
+  '/admin/professores': typeof AdminProfessoresRoute
+  '/admin/relatorios': typeof AdminRelatoriosRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
   '/aluno/aulas': typeof AlunoAulasRoute
   '/aluno/flashcards': typeof AlunoFlashcardsRoute
   '/aluno/historico': typeof AlunoHistoricoRoute
@@ -138,16 +216,26 @@ export interface FileRoutesByTo {
   '/professor/billing': typeof ProfessorBillingRoute
   '/professor/flashcards': typeof ProfessorFlashcardsRoute
   '/professor/historico': typeof ProfessorHistoricoRoute
+  '/admin': typeof AdminIndexRoute
   '/aluno': typeof AlunoIndexRoute
   '/professor': typeof ProfessorIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/aluno': typeof AlunoRouteWithChildren
   '/auth': typeof AuthRoute
   '/professor': typeof ProfessorRouteWithChildren
+  '/admin/assinaturas': typeof AdminAssinaturasRoute
+  '/admin/aulas': typeof AdminAulasRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
+  '/admin/flashcards': typeof AdminFlashcardsRoute
+  '/admin/moderacao': typeof AdminModeracaoRoute
+  '/admin/pagamentos': typeof AdminPagamentosRoute
+  '/admin/professores': typeof AdminProfessoresRoute
+  '/admin/relatorios': typeof AdminRelatoriosRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
   '/aluno/aulas': typeof AlunoAulasRoute
   '/aluno/flashcards': typeof AlunoFlashcardsRoute
   '/aluno/historico': typeof AlunoHistoricoRoute
@@ -157,6 +245,7 @@ export interface FileRoutesById {
   '/professor/billing': typeof ProfessorBillingRoute
   '/professor/flashcards': typeof ProfessorFlashcardsRoute
   '/professor/historico': typeof ProfessorHistoricoRoute
+  '/admin/': typeof AdminIndexRoute
   '/aluno/': typeof AlunoIndexRoute
   '/professor/': typeof ProfessorIndexRoute
 }
@@ -164,10 +253,19 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/aluno'
     | '/auth'
     | '/professor'
+    | '/admin/assinaturas'
+    | '/admin/aulas'
     | '/admin/configuracoes'
+    | '/admin/flashcards'
+    | '/admin/moderacao'
+    | '/admin/pagamentos'
+    | '/admin/professores'
+    | '/admin/relatorios'
+    | '/admin/usuarios'
     | '/aluno/aulas'
     | '/aluno/flashcards'
     | '/aluno/historico'
@@ -177,13 +275,22 @@ export interface FileRouteTypes {
     | '/professor/billing'
     | '/professor/flashcards'
     | '/professor/historico'
+    | '/admin/'
     | '/aluno/'
     | '/professor/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
+    | '/admin/assinaturas'
+    | '/admin/aulas'
     | '/admin/configuracoes'
+    | '/admin/flashcards'
+    | '/admin/moderacao'
+    | '/admin/pagamentos'
+    | '/admin/professores'
+    | '/admin/relatorios'
+    | '/admin/usuarios'
     | '/aluno/aulas'
     | '/aluno/flashcards'
     | '/aluno/historico'
@@ -193,15 +300,25 @@ export interface FileRouteTypes {
     | '/professor/billing'
     | '/professor/flashcards'
     | '/professor/historico'
+    | '/admin'
     | '/aluno'
     | '/professor'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/aluno'
     | '/auth'
     | '/professor'
+    | '/admin/assinaturas'
+    | '/admin/aulas'
     | '/admin/configuracoes'
+    | '/admin/flashcards'
+    | '/admin/moderacao'
+    | '/admin/pagamentos'
+    | '/admin/professores'
+    | '/admin/relatorios'
+    | '/admin/usuarios'
     | '/aluno/aulas'
     | '/aluno/flashcards'
     | '/aluno/historico'
@@ -211,16 +328,17 @@ export interface FileRouteTypes {
     | '/professor/billing'
     | '/professor/flashcards'
     | '/professor/historico'
+    | '/admin/'
     | '/aluno/'
     | '/professor/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AlunoRoute: typeof AlunoRouteWithChildren
   AuthRoute: typeof AuthRoute
   ProfessorRoute: typeof ProfessorRouteWithChildren
-  AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -246,6 +364,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlunoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -266,6 +391,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/aluno/'
       preLoaderRoute: typeof AlunoIndexRouteImport
       parentRoute: typeof AlunoRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/professor/historico': {
       id: '/professor/historico'
@@ -330,15 +462,99 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlunoAulasRouteImport
       parentRoute: typeof AlunoRoute
     }
+    '/admin/usuarios': {
+      id: '/admin/usuarios'
+      path: '/usuarios'
+      fullPath: '/admin/usuarios'
+      preLoaderRoute: typeof AdminUsuariosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/relatorios': {
+      id: '/admin/relatorios'
+      path: '/relatorios'
+      fullPath: '/admin/relatorios'
+      preLoaderRoute: typeof AdminRelatoriosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/professores': {
+      id: '/admin/professores'
+      path: '/professores'
+      fullPath: '/admin/professores'
+      preLoaderRoute: typeof AdminProfessoresRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/pagamentos': {
+      id: '/admin/pagamentos'
+      path: '/pagamentos'
+      fullPath: '/admin/pagamentos'
+      preLoaderRoute: typeof AdminPagamentosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/moderacao': {
+      id: '/admin/moderacao'
+      path: '/moderacao'
+      fullPath: '/admin/moderacao'
+      preLoaderRoute: typeof AdminModeracaoRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/flashcards': {
+      id: '/admin/flashcards'
+      path: '/flashcards'
+      fullPath: '/admin/flashcards'
+      preLoaderRoute: typeof AdminFlashcardsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/configuracoes': {
       id: '/admin/configuracoes'
-      path: '/admin/configuracoes'
+      path: '/configuracoes'
       fullPath: '/admin/configuracoes'
       preLoaderRoute: typeof AdminConfiguracoesRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/aulas': {
+      id: '/admin/aulas'
+      path: '/aulas'
+      fullPath: '/admin/aulas'
+      preLoaderRoute: typeof AdminAulasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/assinaturas': {
+      id: '/admin/assinaturas'
+      path: '/assinaturas'
+      fullPath: '/admin/assinaturas'
+      preLoaderRoute: typeof AdminAssinaturasRouteImport
+      parentRoute: typeof AdminRoute
     }
   }
 }
+
+interface AdminRouteChildren {
+  AdminAssinaturasRoute: typeof AdminAssinaturasRoute
+  AdminAulasRoute: typeof AdminAulasRoute
+  AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
+  AdminFlashcardsRoute: typeof AdminFlashcardsRoute
+  AdminModeracaoRoute: typeof AdminModeracaoRoute
+  AdminPagamentosRoute: typeof AdminPagamentosRoute
+  AdminProfessoresRoute: typeof AdminProfessoresRoute
+  AdminRelatoriosRoute: typeof AdminRelatoriosRoute
+  AdminUsuariosRoute: typeof AdminUsuariosRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAssinaturasRoute: AdminAssinaturasRoute,
+  AdminAulasRoute: AdminAulasRoute,
+  AdminConfiguracoesRoute: AdminConfiguracoesRoute,
+  AdminFlashcardsRoute: AdminFlashcardsRoute,
+  AdminModeracaoRoute: AdminModeracaoRoute,
+  AdminPagamentosRoute: AdminPagamentosRoute,
+  AdminProfessoresRoute: AdminProfessoresRoute,
+  AdminRelatoriosRoute: AdminRelatoriosRoute,
+  AdminUsuariosRoute: AdminUsuariosRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface AlunoRouteChildren {
   AlunoAulasRoute: typeof AlunoAulasRoute
@@ -382,21 +598,11 @@ const ProfessorRouteWithChildren = ProfessorRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   AlunoRoute: AlunoRouteWithChildren,
   AuthRoute: AuthRoute,
   ProfessorRoute: ProfessorRouteWithChildren,
-  AdminConfiguracoesRoute: AdminConfiguracoesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
