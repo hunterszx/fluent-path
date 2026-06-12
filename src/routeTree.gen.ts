@@ -24,6 +24,7 @@ import { Route as AlunoPerfilRouteImport } from './routes/aluno.perfil'
 import { Route as AlunoHistoricoRouteImport } from './routes/aluno.historico'
 import { Route as AlunoFlashcardsRouteImport } from './routes/aluno.flashcards'
 import { Route as AlunoAulasRouteImport } from './routes/aluno.aulas'
+import { Route as AdminConfiguracoesRouteImport } from './routes/admin.configuracoes'
 
 const ProfessorRoute = ProfessorRouteImport.update({
   id: '/professor',
@@ -100,12 +101,18 @@ const AlunoAulasRoute = AlunoAulasRouteImport.update({
   path: '/aulas',
   getParentRoute: () => AlunoRoute,
 } as any)
+const AdminConfiguracoesRoute = AdminConfiguracoesRouteImport.update({
+  id: '/admin/configuracoes',
+  path: '/admin/configuracoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/aluno': typeof AlunoRouteWithChildren
   '/auth': typeof AuthRoute
   '/professor': typeof ProfessorRouteWithChildren
+  '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/aluno/aulas': typeof AlunoAulasRoute
   '/aluno/flashcards': typeof AlunoFlashcardsRoute
   '/aluno/historico': typeof AlunoHistoricoRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/aluno/aulas': typeof AlunoAulasRoute
   '/aluno/flashcards': typeof AlunoFlashcardsRoute
   '/aluno/historico': typeof AlunoHistoricoRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   '/aluno': typeof AlunoRouteWithChildren
   '/auth': typeof AuthRoute
   '/professor': typeof ProfessorRouteWithChildren
+  '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/aluno/aulas': typeof AlunoAulasRoute
   '/aluno/flashcards': typeof AlunoFlashcardsRoute
   '/aluno/historico': typeof AlunoHistoricoRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/aluno'
     | '/auth'
     | '/professor'
+    | '/admin/configuracoes'
     | '/aluno/aulas'
     | '/aluno/flashcards'
     | '/aluno/historico'
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/admin/configuracoes'
     | '/aluno/aulas'
     | '/aluno/flashcards'
     | '/aluno/historico'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/aluno'
     | '/auth'
     | '/professor'
+    | '/admin/configuracoes'
     | '/aluno/aulas'
     | '/aluno/flashcards'
     | '/aluno/historico'
@@ -208,6 +220,7 @@ export interface RootRouteChildren {
   AlunoRoute: typeof AlunoRouteWithChildren
   AuthRoute: typeof AuthRoute
   ProfessorRoute: typeof ProfessorRouteWithChildren
+  AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -317,6 +330,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlunoAulasRouteImport
       parentRoute: typeof AlunoRoute
     }
+    '/admin/configuracoes': {
+      id: '/admin/configuracoes'
+      path: '/admin/configuracoes'
+      fullPath: '/admin/configuracoes'
+      preLoaderRoute: typeof AdminConfiguracoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -365,6 +385,7 @@ const rootRouteChildren: RootRouteChildren = {
   AlunoRoute: AlunoRouteWithChildren,
   AuthRoute: AuthRoute,
   ProfessorRoute: ProfessorRouteWithChildren,
+  AdminConfiguracoesRoute: AdminConfiguracoesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
