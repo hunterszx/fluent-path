@@ -180,7 +180,7 @@ function AuthPage() {
 
 function Field({
   icon: Icon, value, onChange, ...rest
-}: { icon: any; value: string; onChange: (v: string) => void } & React.InputHTMLAttributes<HTMLInputElement>) {
+}: { icon: any; value: string; onChange: (v: string) => void } & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value">) {
   return (
     <div className="flex items-center gap-2 rounded-xl border bg-card px-3.5 focus-within:ring-2 focus-within:ring-primary/40">
       <Icon className="h-4 w-4 text-muted-foreground" />
