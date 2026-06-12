@@ -9,16 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ProfessorRouteImport } from './routes/professor'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AlunoRouteImport } from './routes/aluno'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProfessorIndexRouteImport } from './routes/professor.index'
 import { Route as AlunoIndexRouteImport } from './routes/aluno.index'
+import { Route as ProfessorHistoricoRouteImport } from './routes/professor.historico'
+import { Route as ProfessorFlashcardsRouteImport } from './routes/professor.flashcards'
+import { Route as ProfessorBillingRouteImport } from './routes/professor.billing'
+import { Route as ProfessorAgendaRouteImport } from './routes/professor.agenda'
 import { Route as AlunoProgressoRouteImport } from './routes/aluno.progresso'
 import { Route as AlunoPerfilRouteImport } from './routes/aluno.perfil'
 import { Route as AlunoHistoricoRouteImport } from './routes/aluno.historico'
 import { Route as AlunoFlashcardsRouteImport } from './routes/aluno.flashcards'
 import { Route as AlunoAulasRouteImport } from './routes/aluno.aulas'
 
+const ProfessorRoute = ProfessorRouteImport.update({
+  id: '/professor',
+  path: '/professor',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -34,10 +45,35 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfessorIndexRoute = ProfessorIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProfessorRoute,
+} as any)
 const AlunoIndexRoute = AlunoIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AlunoRoute,
+} as any)
+const ProfessorHistoricoRoute = ProfessorHistoricoRouteImport.update({
+  id: '/historico',
+  path: '/historico',
+  getParentRoute: () => ProfessorRoute,
+} as any)
+const ProfessorFlashcardsRoute = ProfessorFlashcardsRouteImport.update({
+  id: '/flashcards',
+  path: '/flashcards',
+  getParentRoute: () => ProfessorRoute,
+} as any)
+const ProfessorBillingRoute = ProfessorBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => ProfessorRoute,
+} as any)
+const ProfessorAgendaRoute = ProfessorAgendaRouteImport.update({
+  id: '/agenda',
+  path: '/agenda',
+  getParentRoute: () => ProfessorRoute,
 } as any)
 const AlunoProgressoRoute = AlunoProgressoRouteImport.update({
   id: '/progresso',
@@ -69,12 +105,18 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/aluno': typeof AlunoRouteWithChildren
   '/auth': typeof AuthRoute
+  '/professor': typeof ProfessorRouteWithChildren
   '/aluno/aulas': typeof AlunoAulasRoute
   '/aluno/flashcards': typeof AlunoFlashcardsRoute
   '/aluno/historico': typeof AlunoHistoricoRoute
   '/aluno/perfil': typeof AlunoPerfilRoute
   '/aluno/progresso': typeof AlunoProgressoRoute
+  '/professor/agenda': typeof ProfessorAgendaRoute
+  '/professor/billing': typeof ProfessorBillingRoute
+  '/professor/flashcards': typeof ProfessorFlashcardsRoute
+  '/professor/historico': typeof ProfessorHistoricoRoute
   '/aluno/': typeof AlunoIndexRoute
+  '/professor/': typeof ProfessorIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -84,19 +126,30 @@ export interface FileRoutesByTo {
   '/aluno/historico': typeof AlunoHistoricoRoute
   '/aluno/perfil': typeof AlunoPerfilRoute
   '/aluno/progresso': typeof AlunoProgressoRoute
+  '/professor/agenda': typeof ProfessorAgendaRoute
+  '/professor/billing': typeof ProfessorBillingRoute
+  '/professor/flashcards': typeof ProfessorFlashcardsRoute
+  '/professor/historico': typeof ProfessorHistoricoRoute
   '/aluno': typeof AlunoIndexRoute
+  '/professor': typeof ProfessorIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/aluno': typeof AlunoRouteWithChildren
   '/auth': typeof AuthRoute
+  '/professor': typeof ProfessorRouteWithChildren
   '/aluno/aulas': typeof AlunoAulasRoute
   '/aluno/flashcards': typeof AlunoFlashcardsRoute
   '/aluno/historico': typeof AlunoHistoricoRoute
   '/aluno/perfil': typeof AlunoPerfilRoute
   '/aluno/progresso': typeof AlunoProgressoRoute
+  '/professor/agenda': typeof ProfessorAgendaRoute
+  '/professor/billing': typeof ProfessorBillingRoute
+  '/professor/flashcards': typeof ProfessorFlashcardsRoute
+  '/professor/historico': typeof ProfessorHistoricoRoute
   '/aluno/': typeof AlunoIndexRoute
+  '/professor/': typeof ProfessorIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -104,12 +157,18 @@ export interface FileRouteTypes {
     | '/'
     | '/aluno'
     | '/auth'
+    | '/professor'
     | '/aluno/aulas'
     | '/aluno/flashcards'
     | '/aluno/historico'
     | '/aluno/perfil'
     | '/aluno/progresso'
+    | '/professor/agenda'
+    | '/professor/billing'
+    | '/professor/flashcards'
+    | '/professor/historico'
     | '/aluno/'
+    | '/professor/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -119,28 +178,47 @@ export interface FileRouteTypes {
     | '/aluno/historico'
     | '/aluno/perfil'
     | '/aluno/progresso'
+    | '/professor/agenda'
+    | '/professor/billing'
+    | '/professor/flashcards'
+    | '/professor/historico'
     | '/aluno'
+    | '/professor'
   id:
     | '__root__'
     | '/'
     | '/aluno'
     | '/auth'
+    | '/professor'
     | '/aluno/aulas'
     | '/aluno/flashcards'
     | '/aluno/historico'
     | '/aluno/perfil'
     | '/aluno/progresso'
+    | '/professor/agenda'
+    | '/professor/billing'
+    | '/professor/flashcards'
+    | '/professor/historico'
     | '/aluno/'
+    | '/professor/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AlunoRoute: typeof AlunoRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ProfessorRoute: typeof ProfessorRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/professor': {
+      id: '/professor'
+      path: '/professor'
+      fullPath: '/professor'
+      preLoaderRoute: typeof ProfessorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -162,12 +240,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/professor/': {
+      id: '/professor/'
+      path: '/'
+      fullPath: '/professor/'
+      preLoaderRoute: typeof ProfessorIndexRouteImport
+      parentRoute: typeof ProfessorRoute
+    }
     '/aluno/': {
       id: '/aluno/'
       path: '/'
       fullPath: '/aluno/'
       preLoaderRoute: typeof AlunoIndexRouteImport
       parentRoute: typeof AlunoRoute
+    }
+    '/professor/historico': {
+      id: '/professor/historico'
+      path: '/historico'
+      fullPath: '/professor/historico'
+      preLoaderRoute: typeof ProfessorHistoricoRouteImport
+      parentRoute: typeof ProfessorRoute
+    }
+    '/professor/flashcards': {
+      id: '/professor/flashcards'
+      path: '/flashcards'
+      fullPath: '/professor/flashcards'
+      preLoaderRoute: typeof ProfessorFlashcardsRouteImport
+      parentRoute: typeof ProfessorRoute
+    }
+    '/professor/billing': {
+      id: '/professor/billing'
+      path: '/billing'
+      fullPath: '/professor/billing'
+      preLoaderRoute: typeof ProfessorBillingRouteImport
+      parentRoute: typeof ProfessorRoute
+    }
+    '/professor/agenda': {
+      id: '/professor/agenda'
+      path: '/agenda'
+      fullPath: '/professor/agenda'
+      preLoaderRoute: typeof ProfessorAgendaRouteImport
+      parentRoute: typeof ProfessorRoute
     }
     '/aluno/progresso': {
       id: '/aluno/progresso'
@@ -227,11 +340,42 @@ const AlunoRouteChildren: AlunoRouteChildren = {
 
 const AlunoRouteWithChildren = AlunoRoute._addFileChildren(AlunoRouteChildren)
 
+interface ProfessorRouteChildren {
+  ProfessorAgendaRoute: typeof ProfessorAgendaRoute
+  ProfessorBillingRoute: typeof ProfessorBillingRoute
+  ProfessorFlashcardsRoute: typeof ProfessorFlashcardsRoute
+  ProfessorHistoricoRoute: typeof ProfessorHistoricoRoute
+  ProfessorIndexRoute: typeof ProfessorIndexRoute
+}
+
+const ProfessorRouteChildren: ProfessorRouteChildren = {
+  ProfessorAgendaRoute: ProfessorAgendaRoute,
+  ProfessorBillingRoute: ProfessorBillingRoute,
+  ProfessorFlashcardsRoute: ProfessorFlashcardsRoute,
+  ProfessorHistoricoRoute: ProfessorHistoricoRoute,
+  ProfessorIndexRoute: ProfessorIndexRoute,
+}
+
+const ProfessorRouteWithChildren = ProfessorRoute._addFileChildren(
+  ProfessorRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AlunoRoute: AlunoRouteWithChildren,
   AuthRoute: AuthRoute,
+  ProfessorRoute: ProfessorRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
