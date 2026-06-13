@@ -1,20 +1,248 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SectionPlaceholder } from "@/components/section-placeholder";
+import { useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Layers, Sparkles, Search, Volume2, RotateCcw, Check, Flame, Trophy, BookOpen } from "lucide-react";
+import { PageHeader, StatCard } from "@/components/app-shell";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/lib/auth-context";
+import { listDecks, getDueCards, recordReview, getReviewStats, type ReviewGrade } from "@/lib/flashcards-api";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/aluno/flashcards")({ component: Page });
+
 function Page() {
+  const { user } = useAuth();
+  const userId = user?.id ?? "";
+  const [tab, setTab] = useState<"revisar" | "biblioteca">("revisar");
+
   return (
-    <SectionPlaceholder
-      title="Flashcards"
-      subtitle="Revise com repetição espaçada e treine pronúncia com IA."
-      items={[
-        { label: "Decks da plataforma", description: "Curadoria oficial Lunari para acelerar seu progresso." },
-        { label: "Decks dos professores", description: "Cards personalizados enviados pelos seus professores." },
-        { label: "Favoritos", description: "Sua biblioteca pessoal de cards salvos." },
-        { label: "Sessão de revisão", description: "Novo · Em estudo · Difícil · Dominado." },
-        { label: "Pronúncia por IA", description: "Ouça a palavra e receba feedback ao gravar a sua." },
-        { label: "Histórico", description: "Acompanhe sua evolução em cada deck." },
-      ]}
-    />
+    <div>
+      <PageHeader
+        title="Flashcards"
+        subtitle="Estude com repetição espaçada. Memorização real, no seu ritmo."
+      />
+
+      <div className="mb-6 inline-flex rounded-xl border bg-card p-1">
+        {(["revisar", "biblioteca"] as const).map((t) => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold capitalize transition ${
+              tab === t ? "gradient-brand text-white" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
+
+      {tab === "revisar" ? <ReviewPanel userId={userId} /> : <Library userId={userId} />}
+    </div>
   );
 }
+
+function ReviewPanel({ userId }: { userId: string }) {
+  const qc = useQueryClient();
+  const stats = useQuery({
+    queryKey: ["fc-stats", userId],
+    queryFn: () => getReviewStats(userId),
+    enabled: !!userId,
+  });
+  const due = useQuery({
+    queryKey: ["fc-due", userId],
+    queryFn: () => getDueCards(userId, 20),
+    enabled: !!userId,
+  });
+  const [index, setIndex] = useState(0);
+  const [flipped, setFlipped] = useState(false);
+
+  const items = due.data ?? [];
+  const current = items[index];
+
+  const review = useMutation({
+    mutationFn: (grade: ReviewGrade) =>
+      recordReview({ userId, cardId: current!.card.id, grade, previous: current!.review }),
+    onSuccess: () => {
+      setFlipped(false);
+      if (index + 1 < items.length) setIndex(index + 1);
+      else {
+        qc.invalidateQueries({ queryKey: ["fc-due", userId] });
+        qc.invalidateQueries({ queryKey: ["fc-stats", userId] });
+        setIndex(0);
+        toast.success("Sessão concluída!", { description: "Volte amanhã para manter o ritmo." });
+      }
+    },
+    onError: (e: Error) => toast.error("Não foi possível salvar", { description: e.message }),
+  });
+
+  function speak(text: string) {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "en-US";
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard label="A REVISAR" value={stats.data?.due ?? "—"} icon={Layers} tone="brand" />
+        <StatCard label="ESTUDADOS" value={stats.data?.studied ?? "—"} icon={BookOpen} />
+        <StatCard label="DOMINADOS" value={stats.data?.mastered ?? "—"} icon={Trophy} tone="success" />
+        <StatCard label="DIFÍCEIS" value={stats.data?.hard ?? "—"} icon={Flame} tone="warning" />
+      </div>
+
+      {due.isLoading ? (
+        <Skeleton className="h-72 w-full" />
+      ) : !current ? (
+        <EmptyState />
+      ) : (
+        <div className="surface-card mx-auto max-w-2xl p-6 sm:p-10">
+          <div className="mb-4 flex items-center justify-between text-xs text-muted-foreground">
+            <span>Card {index + 1} de {items.length}</span>
+            <span className="rounded-full bg-elevated px-2 py-0.5 font-semibold capitalize">
+              {current.review?.status ?? "novo"}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setFlipped((f) => !f)}
+            className="block w-full rounded-2xl border bg-elevated p-8 text-center transition hover:ring-1 hover:ring-primary/40"
+          >
+            <div className="text-[11px] font-semibold tracking-[0.18em] text-brand-2">
+              {flipped ? "TRADUÇÃO" : "PALAVRA"}
+            </div>
+            <div className="mt-4 font-display text-3xl font-bold sm:text-4xl">
+              {flipped ? current.card.back_text : current.card.front_text}
+            </div>
+            {flipped && current.card.example_sentence && (
+              <p className="mt-4 text-sm italic text-muted-foreground">
+                “{current.card.example_sentence}”
+              </p>
+            )}
+            <div className="mt-6 text-xs text-muted-foreground">
+              Toque para {flipped ? "voltar" : "ver tradução"}
+            </div>
+          </button>
+
+          <div className="mt-4 flex justify-center gap-2">
+            <button
+              onClick={() => speak(current.card.front_text)}
+              className="flex items-center gap-2 rounded-lg border bg-card px-3 py-2 text-xs font-semibold text-muted-foreground hover:bg-elevated"
+            >
+              <Volume2 className="h-3.5 w-3.5" /> Ouvir pronúncia
+            </button>
+          </div>
+
+          {flipped && (
+            <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
+              <GradeButton label="De novo" tone="danger" onClick={() => review.mutate("again")} disabled={review.isPending} />
+              <GradeButton label="Difícil" tone="warn" onClick={() => review.mutate("hard")} disabled={review.isPending} />
+              <GradeButton label="Bom" tone="brand" onClick={() => review.mutate("good")} disabled={review.isPending} />
+              <GradeButton label="Fácil" tone="success" onClick={() => review.mutate("easy")} disabled={review.isPending} />
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function GradeButton({
+  label, tone, onClick, disabled,
+}: { label: string; tone: "danger" | "warn" | "brand" | "success"; onClick: () => void; disabled?: boolean }) {
+  const cls =
+    tone === "danger" ? "bg-destructive/15 text-destructive hover:bg-destructive/25" :
+    tone === "warn" ? "bg-warning/15 text-warning hover:bg-warning/25" :
+    tone === "success" ? "bg-success/15 text-success hover:bg-success/25" :
+    "gradient-brand text-white";
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`rounded-xl px-3 py-3 text-sm font-semibold transition disabled:opacity-50 ${cls}`}
+    >
+      {label}
+    </button>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="surface-card mx-auto max-w-2xl p-10 text-center">
+      <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl gradient-brand glow-brand">
+        <Sparkles className="h-6 w-6 text-white" />
+      </div>
+      <h3 className="mt-4 font-display text-xl font-semibold">Tudo em dia por aqui ✨</h3>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Não há cards para revisar agora. Adicione decks na sua biblioteca ou aguarde o próximo intervalo de revisão.
+      </p>
+    </div>
+  );
+}
+
+function Library({ userId }: { userId: string }) {
+  const [q, setQ] = useState("");
+  const decks = useQuery({
+    queryKey: ["fc-decks-all"],
+    queryFn: () => listDecks(),
+    enabled: !!userId,
+  });
+
+  const filtered = useMemo(() => {
+    const all = decks.data ?? [];
+    if (!q) return all;
+    const t = q.toLowerCase();
+    return all.filter((d) =>
+      d.title.toLowerCase().includes(t) || (d.topic ?? "").toLowerCase().includes(t),
+    );
+  }, [decks.data, q]);
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-2 rounded-xl border bg-card px-3.5">
+        <Search className="h-4 w-4 text-muted-foreground" />
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Buscar por palavra, tema, nível…"
+          className="w-full bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground"
+        />
+      </div>
+
+      {decks.isLoading ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[0, 1, 2].map((i) => <Skeleton key={i} className="h-32" />)}
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="surface-card p-10 text-center text-muted-foreground">
+          Nenhum deck disponível ainda. Peça ao seu professor para compartilhar um deck com você.
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((d) => (
+            <div key={d.id} className="surface-elevated p-5">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <div className="text-[10px] font-semibold tracking-[0.18em] text-muted-foreground">
+                    {d.source_type.toUpperCase()}{d.level ? ` · ${d.level}` : ""}
+                  </div>
+                  <div className="mt-1 font-display text-lg font-semibold">{d.title}</div>
+                </div>
+                <span className="text-2xl">{d.cover_emoji ?? "📘"}</span>
+              </div>
+              {d.description && <p className="mt-2 text-xs text-muted-foreground">{d.description}</p>}
+              <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+                <Check className="h-3.5 w-3.5" /> {d.topic ?? "geral"}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Silence unused-import warning when tree-shake doesn't catch it
+void RotateCcw;
