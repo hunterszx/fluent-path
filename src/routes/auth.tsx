@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 import { ArrowRight, Mail, Lock, User as UserIcon } from "lucide-react";
 import { LunariLogo } from "@/components/lunari-logo";
-import { useAuth, TESTER_CREDENTIALS, type Role } from "@/lib/auth-context";
+import { useAuth, type Role } from "@/lib/auth-context";
 
 const searchSchema = z.object({ mode: z.enum(["login", "signup"]).optional() });
 
@@ -48,17 +48,15 @@ function AuthPage() {
   async function google() {
     setLoading(true);
     try {
-      const u = await loginWithGoogle();
-      navigate({ to: `/${u.activeRole}` });
+      await loginWithGoogle();
+      // The browser usually redirects to Google. If tokens come back
+      // directly, the auth listener hydrates the user and the effect
+      // above performs the navigation.
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao entrar com Google.");
     } finally {
       setLoading(false);
     }
-  }
-
-  function useTester() {
-    setMode("login");
-    setEmail(TESTER_CREDENTIALS.email);
-    setPassword(TESTER_CREDENTIALS.password);
   }
 
   return (
@@ -163,15 +161,9 @@ function AuthPage() {
             )}
           </div>
 
-          <button
-            type="button"
-            onClick={useTester}
-            className="mt-8 w-full rounded-xl border border-dashed border-primary/40 bg-primary/5 px-4 py-3 text-left text-xs text-muted-foreground transition hover:bg-primary/10"
-          >
-            <div className="font-semibold text-foreground">Usuário de teste</div>
-            <div className="mt-0.5">Acesso às áreas Aluno, Professor e Admin.</div>
-            <div className="mt-1 font-mono text-[11px] text-primary">{TESTER_CREDENTIALS.email}</div>
-          </button>
+          <p className="mt-6 text-center text-[11px] text-muted-foreground">
+            Ao continuar você aceita os termos de uso e a política de privacidade.
+          </p>
         </div>
       </div>
     </div>
