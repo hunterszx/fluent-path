@@ -1,11 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Layers, Sparkles, Search, Volume2, RotateCcw, Check, Flame, Trophy, BookOpen } from "lucide-react";
+import { Layers, Sparkles, Search, Volume2, RotateCcw, Check, Flame, Trophy, BookOpen, Mic, Square, Loader2 } from "lucide-react";
 import { PageHeader, StatCard } from "@/components/app-shell";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/lib/auth-context";
 import { listDecks, getDueCards, recordReview, getReviewStats, type ReviewGrade } from "@/lib/flashcards-api";
+import { assessPronunciation, type PronunciationFeedback } from "@/lib/pronunciation.functions";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/aluno/flashcards")({ component: Page });
