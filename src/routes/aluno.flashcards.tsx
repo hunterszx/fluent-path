@@ -137,6 +137,11 @@ function ReviewPanel({ userId }: { userId: string }) {
             </button>
           </div>
 
+          <PronunciationCoach
+            cardId={current.card.id}
+            target={current.card.front_text}
+          />
+
           {flipped && (
             <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
               <GradeButton label="De novo" tone="danger" onClick={() => review.mutate("again")} disabled={review.isPending} />
