@@ -3,30 +3,24 @@ import { useEffect, type ReactNode } from "react";
 import { useAuth, type Role } from "@/lib/auth-context";
 
 export function RoleGuard({ area, children }: { area: Role; children: ReactNode }) {
-  const { user, switchRole } = useAuth();
+  const { user, loading, switchRole } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user === null) return; // still loading from storage
-  }, [user]);
-
-  useEffect(() => {
+    if (loading) return;
     if (!user) {
       navigate({ to: "/auth" });
       return;
     }
-    const isTester = user.roles.includes("tester");
-    const allowed = isTester || user.roles.includes(area);
+    const allowed = user.roles.includes(area);
     if (!allowed) {
       navigate({ to: `/${user.activeRole}` });
       return;
     }
-    if (user.activeRole !== area) {
-      switchRole(area);
-    }
-  }, [user, area, navigate, switchRole]);
+    if (user.activeRole !== area) switchRole(area);
+  }, [user, loading, area, navigate, switchRole]);
 
-  if (!user) {
+  if (loading || !user) {
     return (
       <div className="grid min-h-screen place-items-center bg-background text-muted-foreground">
         Carregando…
