@@ -253,3 +253,156 @@ function Library({ userId }: { userId: string }) {
 
 // Silence unused-import warning when tree-shake doesn't catch it
 void RotateCcw;
+
+function PronunciationCoach({ cardId, target }: { cardId: string; target: string }) {
+  const assess = useServerFn(assessPronunciation);
+  const [recording, setRecording] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [feedback, setFeedback] = useState<PronunciationFeedback | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  function stopStream() {
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
+  }
+
+  async function start() {
+    setError(null);
+    setFeedback(null);
+    if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+      setError("Microfone não suportado neste navegador.");
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      const mime = MediaRecorder.isTypeSupported("audio/webm")
+        ? "audio/webm"
+        : MediaRecorder.isTypeSupported("audio/mp4")
+        ? "audio/mp4"
+        : "";
+      const rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+      chunksRef.current = [];
+      rec.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
+      rec.onstop = async () => {
+        stopStream();
+        const blob = new Blob(chunksRef.current, { type: rec.mimeType || "audio/webm" });
+        await analyze(blob);
+      };
+      recorderRef.current = rec;
+      rec.start();
+      setRecording(true);
+      // Auto-stop após 8s para evitar áudios longos.
+      setTimeout(() => {
+        if (recorderRef.current?.state === "recording") recorderRef.current.stop();
+      }, 8000);
+    } catch {
+      setError("Permissão de microfone negada.");
+    }
+  }
+
+  function stop() {
+    if (recorderRef.current?.state === "recording") recorderRef.current.stop();
+    setRecording(false);
+  }
+
+  async function analyze(blob: Blob) {
+    setAnalyzing(true);
+    try {
+      const buf = await blob.arrayBuffer();
+      // base64 encode
+      let binary = "";
+      const bytes = new Uint8Array(buf);
+      const chunk = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunk) {
+        binary += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + chunk)));
+      }
+      const audioBase64 = btoa(binary);
+      const audioFormat = blob.type.includes("mp4") ? "mp4" : "webm";
+      const res = await assess({
+        data: { audioBase64, audioFormat, expectedText: target, flashcardId: cardId },
+      });
+      setFeedback(res);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Falha ao analisar áudio.";
+      setError(msg);
+      toast.error("Não foi possível analisar", { description: msg });
+    } finally {
+      setAnalyzing(false);
+      setRecording(false);
+    }
+  }
+
+  const scoreColor = feedback
+    ? feedback.score >= 80 ? "text-success" : feedback.score >= 60 ? "text-brand-2" : "text-warning"
+    : "";
+
+  return (
+    <div className="mt-6 rounded-2xl border bg-card/60 p-4">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <div className="text-[10px] font-semibold tracking-[0.18em] text-brand-2">PRONÚNCIA · IA</div>
+          <div className="text-xs text-muted-foreground">Grave sua voz e receba feedback instantâneo.</div>
+        </div>
+        {!recording ? (
+          <button
+            onClick={start}
+            disabled={analyzing}
+            className="flex items-center gap-2 rounded-lg gradient-brand px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+          >
+            {analyzing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Mic className="h-3.5 w-3.5" />}
+            {analyzing ? "Analisando…" : "Gravar"}
+          </button>
+        ) : (
+          <button
+            onClick={stop}
+            className="flex items-center gap-2 rounded-lg bg-destructive/15 px-3 py-2 text-xs font-semibold text-destructive hover:bg-destructive/25"
+          >
+            <Square className="h-3.5 w-3.5" /> Parar
+          </button>
+        )}
+      </div>
+
+      {recording && (
+        <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-destructive" />
+          </span>
+          Gravando… (parará automaticamente em 8s)
+        </div>
+      )}
+
+      {error && <div className="mt-3 text-xs text-destructive">{error}</div>}
+
+      {feedback && (
+        <div className="mt-4 space-y-3 rounded-xl bg-elevated p-4">
+          <div className="flex items-baseline justify-between">
+            <div className="text-xs text-muted-foreground">Você disse: <span className="text-foreground italic">“{feedback.transcript || "—"}”</span></div>
+            <div className={`font-display text-2xl font-bold ${scoreColor}`}>{Math.round(feedback.score)}<span className="text-xs text-muted-foreground">/100</span></div>
+          </div>
+          <p className="text-sm">{feedback.feedback}</p>
+          {feedback.strengths.length > 0 && (
+            <div>
+              <div className="text-[10px] font-semibold tracking-wider text-success">PONTOS FORTES</div>
+              <ul className="mt-1 list-inside list-disc text-xs text-muted-foreground">
+                {feedback.strengths.map((s, i) => <li key={i}>{s}</li>)}
+              </ul>
+            </div>
+          )}
+          {feedback.improvements.length > 0 && (
+            <div>
+              <div className="text-[10px] font-semibold tracking-wider text-warning">A MELHORAR</div>
+              <ul className="mt-1 list-inside list-disc text-xs text-muted-foreground">
+                {feedback.improvements.map((s, i) => <li key={i}>{s}</li>)}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
