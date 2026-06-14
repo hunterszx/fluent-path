@@ -1,6 +1,7 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Home, Layers, Calendar, TrendingUp, History, User as UserIcon,
   Wallet, BookOpen, Users, GraduationCap, Shield, BarChart3, Settings,
@@ -151,18 +152,44 @@ export function AppShell({ area, children }: { area: Role; children: ReactNode }
       <div className="hidden lg:block">{sidebar}</div>
 
       {/* Mobile drawer */}
-      {open && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} />
-          <div className="absolute inset-y-0 left-0">{sidebar}</div>
-        </div>
-      )}
+      <AnimatePresence>
+        {open && (
+          <div className="fixed inset-0 z-50 lg:hidden">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setOpen(false)}
+            />
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", stiffness: 320, damping: 32 }}
+              className="absolute inset-y-0 left-0 shadow-2xl"
+            >
+              <div className="relative h-full">
+                <button
+                  onClick={() => setOpen(false)}
+                  aria-label="Fechar menu"
+                  className="absolute right-3 top-3 z-10 grid h-9 w-9 cursor-pointer place-items-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+                {sidebar}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center gap-3 border-b px-4 py-3 lg:hidden">
           <button
             onClick={() => setOpen(true)}
-            className="grid h-10 w-10 place-items-center rounded-lg border"
+            className="grid h-10 w-10 cursor-pointer place-items-center rounded-lg border transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md active:translate-y-0 active:scale-95"
             aria-label="Abrir menu"
           >
             <Menu className="h-5 w-5" />
