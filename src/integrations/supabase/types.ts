@@ -192,6 +192,7 @@ export type Database = {
           id: string
           native_language: string | null
           plan: string
+          teacher_status: Database["public"]["Enums"]["teacher_status"]
           updated_at: string
         }
         Insert: {
@@ -202,6 +203,7 @@ export type Database = {
           id: string
           native_language?: string | null
           plan?: string
+          teacher_status?: Database["public"]["Enums"]["teacher_status"]
           updated_at?: string
         }
         Update: {
@@ -212,6 +214,7 @@ export type Database = {
           id?: string
           native_language?: string | null
           plan?: string
+          teacher_status?: Database["public"]["Enums"]["teacher_status"]
           updated_at?: string
         }
         Relationships: []
@@ -375,6 +378,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_teacher: { Args: { _user_id: string }; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -382,6 +386,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      reject_teacher: { Args: { _user_id: string }; Returns: undefined }
     }
     Enums: {
       app_role: "aluno" | "professor" | "admin"
@@ -390,6 +395,7 @@ export type Database = {
       cefr_level: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"
       review_status: "new" | "learning" | "hard" | "mastered"
       session_type: "quick" | "spaced" | "deck" | "hard"
+      teacher_status: "none" | "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -523,6 +529,7 @@ export const Constants = {
       cefr_level: ["A1", "A2", "B1", "B2", "C1", "C2"],
       review_status: ["new", "learning", "hard", "mastered"],
       session_type: ["quick", "spaced", "deck", "hard"],
+      teacher_status: ["none", "pending", "approved", "rejected"],
     },
   },
 } as const
