@@ -5,6 +5,8 @@ import { lovable } from "@/integrations/lovable";
 
 export type Role = "aluno" | "professor" | "admin" | "tester";
 
+export type TeacherStatus = "none" | "pending" | "approved" | "rejected";
+
 export interface User {
   id: string;
   name: string;
@@ -15,6 +17,7 @@ export interface User {
   plan: "free" | "premium";
   englishLevel: string | null;
   nativeLanguage: string | null;
+  teacherStatus: TeacherStatus;
 }
 
 interface AuthContextValue {
@@ -52,6 +55,8 @@ async function hydrateUser(su: SupabaseUser): Promise<User> {
   const stored = readActiveRole();
   const activeRole: Role = stored && roles.includes(stored) ? stored : roles[0]!;
   const meta = (su.user_metadata ?? {}) as Record<string, unknown>;
+  const p = (profile ?? {}) as Record<string, unknown>;
+  const teacherStatus = (p.teacher_status as TeacherStatus | undefined) ?? "none";
   return {
     id: su.id,
     email: su.email ?? "",
@@ -66,6 +71,7 @@ async function hydrateUser(su: SupabaseUser): Promise<User> {
     plan: (profile?.plan as "free" | "premium") ?? "free",
     englishLevel: (profile?.english_level as string | null) ?? null,
     nativeLanguage: (profile?.native_language as string | null) ?? null,
+    teacherStatus,
   };
 }
 
