@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { ArrowRight, Mail, Lock, User as UserIcon } from "lucide-react";
+import { ArrowRight, Mail, Lock, User as UserIcon, Loader2, GraduationCap, BookOpen, Check } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { LunariLogo } from "@/components/lunari-logo";
 import { useAuth, type Role } from "@/lib/auth-context";
 
@@ -22,11 +23,17 @@ function AuthPage() {
   const [role, setRole] = useState<Role>("aluno");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const { user, login, signup, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) navigate({ to: `/${user.activeRole}` });
+    if (!user) return;
+    if (user.teacherStatus === "pending") {
+      navigate({ to: "/pendente" });
+    } else {
+      navigate({ to: `/${user.activeRole}` });
+    }
   }, [user, navigate]);
 
   async function submit(e: React.FormEvent) {
@@ -37,7 +44,11 @@ function AuthPage() {
       const u = mode === "login"
         ? await login(email, password)
         : await signup(name, email, password, role);
-      navigate({ to: `/${u.activeRole}` });
+      if (u.teacherStatus === "pending") {
+        navigate({ to: "/pendente" });
+      } else {
+        navigate({ to: `/${u.activeRole}` });
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao autenticar.");
     } finally {
@@ -46,7 +57,7 @@ function AuthPage() {
   }
 
   async function google() {
-    setLoading(true);
+    setGoogleLoading(true);
     try {
       await loginWithGoogle();
       // The browser usually redirects to Google. If tokens come back
@@ -55,7 +66,7 @@ function AuthPage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao entrar com Google.");
     } finally {
-      setLoading(false);
+      setGoogleLoading(false);
     }
   }
 
@@ -85,20 +96,31 @@ function AuthPage() {
               <LunariLogo size={32} /> <span className="font-display text-xl font-bold">Lunari</span>
             </Link>
           </div>
-          <h1 className="font-display text-3xl font-bold">
-            {mode === "login" ? "Entrar na Lunari" : "Criar sua conta"}
-          </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {mode === "login" ? "Continue sua jornada de inglês." : "Comece grátis em segundos."}
-          </p>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={mode}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.2 }}
+            >
+              <h1 className="font-display text-3xl font-bold">
+                {mode === "login" ? "Entrar na Lunari" : "Criar sua conta"}
+              </h1>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {mode === "login" ? "Continue sua jornada de inglês." : "Comece grátis em segundos."}
+              </p>
+            </motion.div>
+          </AnimatePresence>
 
           <button
             type="button"
             onClick={google}
-            disabled={loading}
+            disabled={loading || googleLoading}
             className="group mt-8 flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-elevated hover:shadow-md active:translate-y-0 active:scale-[0.99] active:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-sm"
           >
-            <GoogleIcon /> Continuar com Google
+            {googleLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <GoogleIcon />}
+            {googleLoading ? "Conectando…" : "Continuar com Google"}
           </button>
 
           <div className="my-6 flex items-center gap-3 text-[11px] uppercase tracking-widest text-muted-foreground">
@@ -106,42 +128,66 @@ function AuthPage() {
           </div>
 
           <form onSubmit={submit} className="space-y-3">
-            {mode === "signup" && (
-              <Field icon={UserIcon} placeholder="Seu nome" value={name} onChange={setName} />
-            )}
+            <AnimatePresence initial={false}>
+              {mode === "signup" && (
+                <motion.div
+                  key="name-field"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
+                >
+                  <Field icon={UserIcon} placeholder="Seu nome" value={name} onChange={setName} />
+                </motion.div>
+              )}
+            </AnimatePresence>
             <Field icon={Mail} type="email" placeholder="seu@email.com" value={email} onChange={setEmail} required />
             <Field icon={Lock} type="password" placeholder="Senha" value={password} onChange={setPassword} required />
 
-            {mode === "signup" && (
-              <div className="rounded-xl border bg-card p-3">
-                <div className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                  Eu sou
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  {(["aluno", "professor"] as Role[]).map((r) => (
-                    <button
-                      key={r}
-                      type="button"
-                      onClick={() => setRole(r)}
-                      className={`rounded-lg px-3 py-2 text-sm font-semibold capitalize transition ${
-                        role === r ? "gradient-brand text-white" : "bg-muted/50 hover:bg-muted"
-                      }`}
-                    >
-                      {r}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+            <AnimatePresence initial={false}>
+              {mode === "signup" && (
+                <motion.div
+                  key="role-picker"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="overflow-hidden"
+                >
+                  <RolePicker role={role} onChange={setRole} />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-            {error && <div className="text-sm text-destructive">{error}</div>}
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+                >
+                  {error}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || googleLoading}
               className="mt-2 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl gradient-brand px-5 py-3 text-sm font-semibold text-white glow-brand transition-all duration-200 hover:-translate-y-0.5 hover:opacity-95 hover:shadow-lg active:translate-y-0 active:scale-[0.99] active:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
             >
-              {mode === "login" ? "Entrar" : "Criar conta"} <ArrowRight className="h-4 w-4" />
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {mode === "login" ? "Entrando…" : "Criando conta…"}
+                </>
+              ) : (
+                <>
+                  {mode === "login" ? "Entrar" : "Criar conta"} <ArrowRight className="h-4 w-4" />
+                </>
+              )}
             </button>
           </form>
 
@@ -166,6 +212,81 @@ function AuthPage() {
           </p>
         </div>
       </div>
+    </div>
+  );
+}
+
+function RolePicker({ role, onChange }: { role: Role; onChange: (r: Role) => void }) {
+  const options: { value: Role; title: string; desc: string; icon: typeof BookOpen }[] = [
+    { value: "aluno", title: "Sou aluno", desc: "Quero aprender inglês", icon: BookOpen },
+    { value: "professor", title: "Sou professor", desc: "Quero ensinar na plataforma", icon: GraduationCap },
+  ];
+  return (
+    <div className="rounded-xl border bg-card p-3">
+      <div className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+        Eu sou
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {options.map((opt) => {
+          const active = role === opt.value;
+          const Icon = opt.icon;
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => onChange(opt.value)}
+              className={`group relative flex cursor-pointer flex-col items-start gap-1.5 overflow-hidden rounded-xl border p-3 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 ${
+                active
+                  ? "border-primary/60 bg-gradient-to-br from-primary/10 to-brand-2/5 shadow-sm"
+                  : "border-border bg-muted/30 hover:border-primary/30"
+              }`}
+            >
+              {active && (
+                <motion.div
+                  layoutId="role-active-bg"
+                  className="pointer-events-none absolute inset-0 -z-10 rounded-xl bg-gradient-to-br from-primary/15 to-brand-2/10"
+                  transition={{ type: "spring", stiffness: 280, damping: 26 }}
+                />
+              )}
+              <div className="flex w-full items-center justify-between">
+                <div className={`grid h-8 w-8 place-items-center rounded-lg transition ${active ? "bg-primary text-white shadow" : "bg-background text-muted-foreground group-hover:text-primary"}`}>
+                  <Icon className="h-4 w-4" />
+                </div>
+                <AnimatePresence>
+                  {active && (
+                    <motion.div
+                      key="check"
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      transition={{ type: "spring", stiffness: 380, damping: 22 }}
+                      className="grid h-5 w-5 place-items-center rounded-full bg-primary text-white"
+                    >
+                      <Check className="h-3 w-3" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+              <div className="text-sm font-semibold">{opt.title}</div>
+              <div className="text-[11px] text-muted-foreground">{opt.desc}</div>
+            </button>
+          );
+        })}
+      </div>
+      <AnimatePresence mode="wait">
+        {role === "professor" && (
+          <motion.div
+            key="prof-note"
+            initial={{ opacity: 0, y: -4, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            exit={{ opacity: 0, y: -4, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="mt-3 overflow-hidden rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-xs text-warning"
+          >
+            Contas de professor passam por aprovação manual antes de liberar o acesso completo.
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
