@@ -17,9 +17,14 @@ export function SectionPlaceholder({
       <PageHeader title={title} subtitle={subtitle} actions={cta} />
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {items.map((it) => (
-          <div key={it.label} className="surface-card p-6 transition hover:bg-elevated">
+          <div
+            key={it.label}
+            role="button"
+            tabIndex={0}
+            className="surface-card group cursor-pointer p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-elevated hover:shadow-lg hover:shadow-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:translate-y-0 active:scale-[0.99]"
+          >
             <div className="text-[11px] font-semibold tracking-[0.18em] text-brand-2">SEÇÃO</div>
-            <div className="mt-2 font-display text-lg font-semibold">{it.label}</div>
+            <div className="mt-2 font-display text-lg font-semibold transition-colors group-hover:text-primary">{it.label}</div>
             <p className="mt-2 text-sm text-muted-foreground">{it.description}</p>
           </div>
         ))}
