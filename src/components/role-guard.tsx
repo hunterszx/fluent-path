@@ -12,6 +12,10 @@ export function RoleGuard({ area, children }: { area: Role; children: ReactNode 
       navigate({ to: "/auth" });
       return;
     }
+    if (user.teacherStatus === "pending") {
+      navigate({ to: "/pendente" });
+      return;
+    }
     const allowed = user.roles.includes(area);
     if (!allowed) {
       navigate({ to: `/${user.activeRole}` });

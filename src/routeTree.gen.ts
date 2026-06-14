@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProfessorRouteImport } from './routes/professor'
+import { Route as PendenteRouteImport } from './routes/pendente'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AlunoRouteImport } from './routes/aluno'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -39,6 +40,11 @@ import { Route as AdminAssinaturasRouteImport } from './routes/admin.assinaturas
 const ProfessorRoute = ProfessorRouteImport.update({
   id: '/professor',
   path: '/professor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PendenteRoute = PendenteRouteImport.update({
+  id: '/pendente',
+  path: '/pendente',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -172,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/aluno': typeof AlunoRouteWithChildren
   '/auth': typeof AuthRoute
+  '/pendente': typeof PendenteRoute
   '/professor': typeof ProfessorRouteWithChildren
   '/admin/assinaturas': typeof AdminAssinaturasRoute
   '/admin/aulas': typeof AdminAulasRoute
@@ -198,6 +205,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/pendente': typeof PendenteRoute
   '/admin/assinaturas': typeof AdminAssinaturasRoute
   '/admin/aulas': typeof AdminAulasRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
@@ -226,6 +234,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/aluno': typeof AlunoRouteWithChildren
   '/auth': typeof AuthRoute
+  '/pendente': typeof PendenteRoute
   '/professor': typeof ProfessorRouteWithChildren
   '/admin/assinaturas': typeof AdminAssinaturasRoute
   '/admin/aulas': typeof AdminAulasRoute
@@ -256,6 +265,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/aluno'
     | '/auth'
+    | '/pendente'
     | '/professor'
     | '/admin/assinaturas'
     | '/admin/aulas'
@@ -282,6 +292,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/pendente'
     | '/admin/assinaturas'
     | '/admin/aulas'
     | '/admin/configuracoes'
@@ -309,6 +320,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/aluno'
     | '/auth'
+    | '/pendente'
     | '/professor'
     | '/admin/assinaturas'
     | '/admin/aulas'
@@ -338,6 +350,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   AlunoRoute: typeof AlunoRouteWithChildren
   AuthRoute: typeof AuthRoute
+  PendenteRoute: typeof PendenteRoute
   ProfessorRoute: typeof ProfessorRouteWithChildren
 }
 
@@ -348,6 +361,13 @@ declare module '@tanstack/react-router' {
       path: '/professor'
       fullPath: '/professor'
       preLoaderRoute: typeof ProfessorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pendente': {
+      id: '/pendente'
+      path: '/pendente'
+      fullPath: '/pendente'
+      preLoaderRoute: typeof PendenteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -601,6 +621,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   AlunoRoute: AlunoRouteWithChildren,
   AuthRoute: AuthRoute,
+  PendenteRoute: PendenteRoute,
   ProfessorRoute: ProfessorRouteWithChildren,
 }
 export const routeTree = rootRouteImport
