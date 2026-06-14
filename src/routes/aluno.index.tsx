@@ -79,10 +79,10 @@ function AlunoHome() {
             <Link
               key={d.title}
               to="/aluno/flashcards"
-              className="surface-elevated block p-5 transition hover:ring-1 hover:ring-primary/40"
+              className="surface-elevated group block cursor-pointer p-5 transition-all duration-200 hover:-translate-y-0.5 hover:ring-1 hover:ring-primary/50 hover:shadow-lg hover:shadow-primary/10 active:translate-y-0 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
             >
               <div className="text-[10px] font-semibold tracking-[0.18em] text-muted-foreground">DECK</div>
-              <div className="mt-2 font-display text-lg font-semibold">{d.title}</div>
+              <div className="mt-2 font-display text-lg font-semibold transition-colors group-hover:text-primary">{d.title}</div>
               <div className="mt-1 text-xs text-muted-foreground">{d.count} cards · 5 min</div>
             </Link>
           ))}
@@ -96,13 +96,13 @@ function Shortcut({ to, icon: Icon, label }: { to: string; icon: any; label: str
   return (
     <Link
       to={to}
-      className="flex items-center justify-between gap-3 rounded-xl border bg-card/60 px-4 py-3 text-sm font-medium transition hover:bg-elevated"
+      className="group flex cursor-pointer items-center justify-between gap-3 rounded-xl border bg-card/60 px-4 py-3 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-elevated hover:shadow-md active:translate-y-0 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
     >
       <span className="flex items-center gap-3">
         <Icon className="h-4 w-4 text-primary" />
         {label}
       </span>
-      <ArrowRight className="h-4 w-4 text-muted-foreground" />
+      <ArrowRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
     </Link>
   );
 }

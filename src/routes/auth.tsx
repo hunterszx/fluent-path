@@ -96,7 +96,7 @@ function AuthPage() {
             type="button"
             onClick={google}
             disabled={loading}
-            className="mt-8 flex w-full items-center justify-center gap-3 rounded-xl border bg-card px-4 py-3 text-sm font-semibold transition hover:bg-elevated disabled:opacity-50"
+            className="group mt-8 flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-elevated hover:shadow-md active:translate-y-0 active:scale-[0.99] active:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-sm"
           >
             <GoogleIcon /> Continuar com Google
           </button>
@@ -139,7 +139,7 @@ function AuthPage() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl gradient-brand px-5 py-3 text-sm font-semibold text-white glow-brand transition hover:opacity-95 disabled:opacity-50"
+              className="mt-2 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl gradient-brand px-5 py-3 text-sm font-semibold text-white glow-brand transition-all duration-200 hover:-translate-y-0.5 hover:opacity-95 hover:shadow-lg active:translate-y-0 active:scale-[0.99] active:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
             >
               {mode === "login" ? "Entrar" : "Criar conta"} <ArrowRight className="h-4 w-4" />
             </button>
