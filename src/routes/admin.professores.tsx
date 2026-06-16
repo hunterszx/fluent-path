@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, Check, X, RefreshCw } from "lucide-react";
+import { Loader2, Check, X, RefreshCw, History } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -17,6 +17,16 @@ interface ProfileRow {
   created_at: string;
 }
 
+interface AuditRow {
+  id: string;
+  teacher_id: string;
+  admin_id: string;
+  action: "approved" | "rejected";
+  notes: string | null;
+  created_at: string;
+  admin_name: string | null;
+}
+
 const TABS: { key: TeacherStatus; label: string }[] = [
   { key: "pending", label: "Pendentes" },
   { key: "approved", label: "Aprovados" },
@@ -28,6 +38,7 @@ function ProfessoresPage() {
   const [rows, setRows] = useState<ProfileRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [acting, setActing] = useState<string | null>(null);
+  const [audit, setAudit] = useState<Record<string, AuditRow | undefined>>({});
 
   async function load() {
     setLoading(true);
@@ -37,7 +48,31 @@ function ProfessoresPage() {
       .eq("teacher_status", tab)
       .order("created_at", { ascending: false });
     if (error) toast.error(error.message);
-    setRows((data ?? []) as ProfileRow[]);
+    const profiles = (data ?? []) as ProfileRow[];
+    setRows(profiles);
+
+    if (tab !== "pending" && profiles.length > 0) {
+      const ids = profiles.map((p) => p.id);
+      const { data: auditRows } = await supabase
+        .from("teacher_approval_audit")
+        .select("id, teacher_id, admin_id, action, notes, created_at")
+        .in("teacher_id", ids)
+        .order("created_at", { ascending: false });
+      const adminIds = Array.from(new Set((auditRows ?? []).map((r) => r.admin_id)));
+      const { data: admins } = adminIds.length
+        ? await supabase.from("profiles").select("id, display_name").in("id", adminIds)
+        : { data: [] as { id: string; display_name: string | null }[] };
+      const nameById = new Map((admins ?? []).map((a) => [a.id, a.display_name]));
+      const latest: Record<string, AuditRow> = {};
+      for (const r of (auditRows ?? []) as Omit<AuditRow, "admin_name">[]) {
+        if (!latest[r.teacher_id]) {
+          latest[r.teacher_id] = { ...r, admin_name: nameById.get(r.admin_id) ?? null };
+        }
+      }
+      setAudit(latest);
+    } else {
+      setAudit({});
+    }
     setLoading(false);
   }
 
@@ -47,9 +82,13 @@ function ProfessoresPage() {
   }, [tab]);
 
   async function act(id: string, action: "approve" | "reject") {
+    const notes =
+      action === "reject"
+        ? window.prompt("Motivo da rejeição (opcional, será registrado):") ?? undefined
+        : undefined;
     setActing(id);
     const fn = action === "approve" ? "approve_teacher" : "reject_teacher";
-    const { error } = await supabase.rpc(fn, { _user_id: id });
+    const { error } = await supabase.rpc(fn, { _user_id: id, _notes: notes ?? null });
     setActing(null);
     if (error) {
       toast.error(error.message);
@@ -120,6 +159,23 @@ function ProfessoresPage() {
                     {r.native_language ?? "—"} · Nível {r.english_level ?? "—"} ·{" "}
                     {new Date(r.created_at).toLocaleDateString("pt-BR")}
                   </div>
+                  {tab !== "pending" && audit[r.id] && (
+                    <div className="mt-1 flex items-start gap-1 text-xs text-muted-foreground">
+                      <History className="h-3 w-3 mt-0.5 shrink-0" />
+                      <span className="truncate">
+                        {audit[r.id]!.action === "approved" ? "Aprovado" : "Rejeitado"} por{" "}
+                        <span className="font-medium text-foreground">
+                          {audit[r.id]!.admin_name ?? "admin"}
+                        </span>{" "}
+                        em{" "}
+                        {new Date(audit[r.id]!.created_at).toLocaleString("pt-BR", {
+                          dateStyle: "short",
+                          timeStyle: "short",
+                        })}
+                        {audit[r.id]!.notes ? ` — "${audit[r.id]!.notes}"` : ""}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
               {tab === "pending" && (
