@@ -352,6 +352,33 @@ export type Database = {
           },
         ]
       }
+      teacher_approval_audit: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          teacher_id: string
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          teacher_id: string
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          teacher_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -378,7 +405,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      approve_teacher: { Args: { _user_id: string }; Returns: undefined }
+      approve_teacher:
+        | { Args: { _user_id: string }; Returns: undefined }
+        | { Args: { _notes?: string; _user_id: string }; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -386,7 +415,9 @@ export type Database = {
         }
         Returns: boolean
       }
-      reject_teacher: { Args: { _user_id: string }; Returns: undefined }
+      reject_teacher:
+        | { Args: { _user_id: string }; Returns: undefined }
+        | { Args: { _notes?: string; _user_id: string }; Returns: undefined }
     }
     Enums: {
       app_role: "aluno" | "professor" | "admin"
