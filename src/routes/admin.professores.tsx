@@ -4,6 +4,8 @@ import { Loader2, Check, X, RefreshCw, History } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { sendTeacherDecisionEmail } from "@/lib/teacher-emails.functions";
 
 type TeacherStatus = "none" | "pending" | "approved" | "rejected";
 
@@ -39,6 +41,7 @@ function ProfessoresPage() {
   const [loading, setLoading] = useState(true);
   const [acting, setActing] = useState<string | null>(null);
   const [audit, setAudit] = useState<Record<string, AuditRow | undefined>>({});
+  const sendEmail = useServerFn(sendTeacherDecisionEmail);
 
   async function load() {
     setLoading(true);
@@ -89,12 +92,32 @@ function ProfessoresPage() {
     setActing(id);
     const fn = action === "approve" ? "approve_teacher" : "reject_teacher";
     const { error } = await supabase.rpc(fn, { _user_id: id, _notes: notes ?? null });
-    setActing(null);
     if (error) {
+      setActing(null);
       toast.error(error.message);
       return;
     }
-    toast.success(action === "approve" ? "Professor aprovado" : "Cadastro rejeitado");
+    try {
+      await sendEmail({
+        data: {
+          teacherId: id,
+          action: action === "approve" ? "approved" : "rejected",
+          notes: notes ?? null,
+        },
+      });
+      toast.success(
+        action === "approve"
+          ? "Professor aprovado — e-mail enviado"
+          : "Cadastro rejeitado — e-mail enviado",
+      );
+    } catch (e) {
+      toast.warning(
+        `${action === "approve" ? "Aprovado" : "Rejeitado"}, mas falhou o envio do e-mail: ${
+          e instanceof Error ? e.message : "erro desconhecido"
+        }`,
+      );
+    }
+    setActing(null);
     setRows((prev) => prev.filter((r) => r.id !== id));
   }
 
