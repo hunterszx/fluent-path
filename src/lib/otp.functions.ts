@@ -112,14 +112,21 @@ export const verifyEmailCode = createServerFn({ method: "POST" })
       const lockedUntil = reached
         ? new Date(now.getTime() + LOCK_MINUTES * 60_000).toISOString()
         : null;
-      await supabaseAdmin.from("otp_attempts").upsert({
-        email,
-        attempts: reached ? 0 : newAttempts,
-        locked_until: lockedUntil,
-        // preserva last_sent_at/expires_at existentes
-        last_sent_at: undefined as unknown as string,
-        expires_at: undefined as unknown as string,
-      } as never);
+      if (row) {
+        await supabaseAdmin
+          .from("otp_attempts")
+          .update({
+            attempts: reached ? 0 : newAttempts,
+            locked_until: lockedUntil,
+          })
+          .eq("email", email);
+      } else {
+        await supabaseAdmin.from("otp_attempts").insert({
+          email,
+          attempts: reached ? 0 : newAttempts,
+          locked_until: lockedUntil,
+        });
+      }
       if (reached) {
         return {
           ok: false as const,

@@ -41,9 +41,13 @@ function AuthPage() {
     setError(null);
     setLoading(true);
     try {
-      const u = mode === "login"
-        ? await login(email, password)
-        : await signup(name, email, password, role);
+      if (mode === "signup") {
+        await signup(name, email, password, role);
+        // Vai para a tela de verificação por código (OTP de 6 dígitos)
+        navigate({ to: "/verify", search: { email } });
+        return;
+      }
+      const u = await login(email, password);
       if (u.teacherStatus === "pending") {
         navigate({ to: "/pendente" });
       } else {
