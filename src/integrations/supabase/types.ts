@@ -183,6 +183,36 @@ export type Database = {
           },
         ]
       }
+      otp_attempts: {
+        Row: {
+          attempts: number
+          created_at: string
+          email: string
+          expires_at: string | null
+          last_sent_at: string | null
+          locked_until: string | null
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          email: string
+          expires_at?: string | null
+          last_sent_at?: string | null
+          locked_until?: string | null
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          email?: string
+          expires_at?: string | null
+          last_sent_at?: string | null
+          locked_until?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

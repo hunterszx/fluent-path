@@ -27,6 +27,21 @@ function LandingPage() {
   );
 }
 
+function smoothScrollTo(id: string) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.scrollIntoView({ behavior: "smooth", block: "start" });
+  // Atualiza a hash sem o "salto" do navegador
+  history.replaceState(null, "", `#${id}`);
+}
+
+function anchorClick(id: string) {
+  return (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    smoothScrollTo(id);
+  };
+}
+
 function Nav() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/70 backdrop-blur-xl">
@@ -36,8 +51,8 @@ function Nav() {
           <span className="font-display text-xl font-bold tracking-tight">Lunari</span>
         </Link>
         <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
-          <a href="#recursos" className="hover:text-foreground">Recursos</a>
-          <a href="#planos" className="hover:text-foreground">Planos</a>
+          <a href="#recursos" onClick={anchorClick("recursos")} className="hover:text-foreground">Recursos</a>
+          <a href="#planos" onClick={anchorClick("planos")} className="hover:text-foreground">Planos</a>
         </nav>
         <div className="flex items-center gap-2">
           <Link to="/auth" className="hidden rounded-full px-4 py-2 text-sm text-muted-foreground hover:text-foreground sm:inline-flex">
@@ -81,6 +96,7 @@ function Hero() {
           </Link>
           <a
             href="#planos"
+            onClick={anchorClick("planos")}
             className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-7 py-3.5 text-sm font-semibold text-foreground transition hover:bg-elevated"
           >
             Ver planos
