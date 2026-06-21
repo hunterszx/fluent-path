@@ -154,7 +154,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Wait a tick for the trigger to commit, then hydrate.
       await new Promise((r) => setTimeout(r, 350));
       const u = await hydrateUser(data.user);
-      setUser(u);
+      // Não autentica até o e-mail ser confirmado (fluxo OTP em /verify).
+      if (data.session) setUser(u);
       return u;
     },
     logout: async () => {

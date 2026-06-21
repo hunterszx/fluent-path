@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VerifyRouteImport } from './routes/verify'
 import { Route as ProfessorRouteImport } from './routes/professor'
 import { Route as PendenteRouteImport } from './routes/pendente'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -37,6 +38,11 @@ import { Route as AdminConfiguracoesRouteImport } from './routes/admin.configura
 import { Route as AdminAulasRouteImport } from './routes/admin.aulas'
 import { Route as AdminAssinaturasRouteImport } from './routes/admin.assinaturas'
 
+const VerifyRoute = VerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfessorRoute = ProfessorRouteImport.update({
   id: '/professor',
   path: '/professor',
@@ -180,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/pendente': typeof PendenteRoute
   '/professor': typeof ProfessorRouteWithChildren
+  '/verify': typeof VerifyRoute
   '/admin/assinaturas': typeof AdminAssinaturasRoute
   '/admin/aulas': typeof AdminAulasRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
@@ -206,6 +213,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/pendente': typeof PendenteRoute
+  '/verify': typeof VerifyRoute
   '/admin/assinaturas': typeof AdminAssinaturasRoute
   '/admin/aulas': typeof AdminAulasRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
@@ -236,6 +244,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/pendente': typeof PendenteRoute
   '/professor': typeof ProfessorRouteWithChildren
+  '/verify': typeof VerifyRoute
   '/admin/assinaturas': typeof AdminAssinaturasRoute
   '/admin/aulas': typeof AdminAulasRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
@@ -267,6 +276,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/pendente'
     | '/professor'
+    | '/verify'
     | '/admin/assinaturas'
     | '/admin/aulas'
     | '/admin/configuracoes'
@@ -293,6 +303,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/pendente'
+    | '/verify'
     | '/admin/assinaturas'
     | '/admin/aulas'
     | '/admin/configuracoes'
@@ -322,6 +333,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/pendente'
     | '/professor'
+    | '/verify'
     | '/admin/assinaturas'
     | '/admin/aulas'
     | '/admin/configuracoes'
@@ -352,10 +364,18 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   PendenteRoute: typeof PendenteRoute
   ProfessorRoute: typeof ProfessorRouteWithChildren
+  VerifyRoute: typeof VerifyRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verify': {
+      id: '/verify'
+      path: '/verify'
+      fullPath: '/verify'
+      preLoaderRoute: typeof VerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/professor': {
       id: '/professor'
       path: '/professor'
@@ -623,6 +643,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   PendenteRoute: PendenteRoute,
   ProfessorRoute: ProfessorRouteWithChildren,
+  VerifyRoute: VerifyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
