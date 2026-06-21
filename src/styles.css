@@ -4,6 +4,16 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Smooth scrolling para âncoras da landing (#recursos, #planos) */
+html {
+  scroll-behavior: smooth;
+}
+/* Compensa a navbar sticky (~72px) ao alvejar âncoras */
+[id="recursos"],
+[id="planos"] {
+  scroll-margin-top: 80px;
+}
+
 /*
  * Design system definition.
  *
