@@ -4,6 +4,7 @@ import { PageHeader, StatCard } from "@/components/app-shell";
 import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/aluno/")({
+  head: () => ({ meta: [{ title: "Área do aluno — Lunari" }, { name: "description", content: "Área do aluno na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:title", content: "Área do aluno — Lunari" }, { property: "og:description", content: "Área do aluno na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: AlunoHome,
 });
 

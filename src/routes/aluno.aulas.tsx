@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SectionPlaceholder } from "@/components/section-placeholder";
 
-export const Route = createFileRoute("/aluno/aulas")({ component: Page });
+export const Route = createFileRoute("/aluno/aulas")({
+  head: () => ({ meta: [{ title: "Área do aluno · Aulas — Lunari" }, { name: "description", content: "Área do aluno · Aulas na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:title", content: "Área do aluno · Aulas — Lunari" }, { property: "og:description", content: "Área do aluno · Aulas na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }), component: Page });
 function Page() {
   return (
     <SectionPlaceholder

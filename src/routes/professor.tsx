@@ -3,6 +3,7 @@ import { AppShell } from "@/components/app-shell";
 import { RoleGuard } from "@/components/role-guard";
 
 export const Route = createFileRoute("/professor")({
+  head: () => ({ meta: [{ title: "Área do professor — Lunari" }, { name: "description", content: "Área do professor na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:title", content: "Área do professor — Lunari" }, { property: "og:description", content: "Área do professor na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: () => (
     <RoleGuard area="professor">
       <AppShell area="professor"><Outlet /></AppShell>

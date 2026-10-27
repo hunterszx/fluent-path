@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Calendar, Users, Bell, Wallet } from "lucide-react";
 import { PageHeader, StatCard } from "@/components/app-shell";
 
-export const Route = createFileRoute("/professor/")({ component: Page });
+export const Route = createFileRoute("/professor/")({
+  head: () => ({ meta: [{ title: "Área do professor — Lunari" }, { name: "description", content: "Área do professor na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:title", content: "Área do professor — Lunari" }, { property: "og:description", content: "Área do professor na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }), component: Page });
 function Page() {
   return (
     <div>
