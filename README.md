@@ -50,7 +50,7 @@ O comando `npm run build` mantém o destino de publicação original do projeto.
 
 ## Solução de problemas
 
-- **Porta ocupada:** encerre o processo que usa a porta 8080 ou execute `npm run dev -- --port 8081` e abra http://localhost:8081.
+- **Porta ocupada:** encerre o processo que usa a porta 8080 ou execute `npm run dev -- --port 8081` e abra http://localhost:8081; essa alternativa foi verificada na cópia instalada com NPM.
 - **Node incompatível:** confira `node --version` e atualize o Node.
 - **Falha de instalação:** confira sua conexão e execute `npm ci` novamente.
 - **Página abre, mas ação online falha:** confira a tabela de limitações acima; instalar dependências não cria credenciais privadas ou serviços online.
