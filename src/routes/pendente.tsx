@@ -6,7 +6,7 @@ import { LunariLogo } from "@/components/lunari-logo";
 import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/pendente")({
-  head: () => ({ meta: [{ title: "Cadastro em análise — Lunari" }] }),
+  head: () => ({ meta: [{ title: "Cadastro em análise — Lunari" }, { name: "description", content: "Cadastro em análise na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:title", content: "Cadastro em análise — Lunari" }, { property: "og:description", content: "Cadastro em análise na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: PendingPage,
 });
 

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SectionPlaceholder } from "@/components/section-placeholder";
-export const Route = createFileRoute("/admin/usuarios")({ component: () => (
+export const Route = createFileRoute("/admin/usuarios")({
+  head: () => ({ meta: [{ title: "Administração · Usuários — Lunari" }, { name: "description", content: "Administração · Usuários na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:title", content: "Administração · Usuários — Lunari" }, { property: "og:description", content: "Administração · Usuários na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }), component: () => (
   <SectionPlaceholder title="Usuários" subtitle="Gerencie alunos e contas da plataforma."
     items={[
       { label: "Lista de alunos", description: "Buscar, filtrar e visualizar perfis." },

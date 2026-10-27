@@ -230,4 +230,5 @@ function ProfessoresPage() {
   );
 }
 
-export const Route = createFileRoute("/admin/professores")({ component: ProfessoresPage });
+export const Route = createFileRoute("/admin/professores")({
+  head: () => ({ meta: [{ title: "Administração · Professores — Lunari" }, { name: "description", content: "Administração · Professores na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:title", content: "Administração · Professores — Lunari" }, { property: "og:description", content: "Administração · Professores na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }), component: ProfessoresPage });

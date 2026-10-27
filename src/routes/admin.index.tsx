@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Users, GraduationCap, CreditCard, BarChart3 } from "lucide-react";
 import { PageHeader, StatCard } from "@/components/app-shell";
 
-export const Route = createFileRoute("/admin/")({ component: Page });
+export const Route = createFileRoute("/admin/")({
+  head: () => ({ meta: [{ title: "Administração — Lunari" }, { name: "description", content: "Administração na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:title", content: "Administração — Lunari" }, { property: "og:description", content: "Administração na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }), component: Page });
 function Page() {
   return (
     <div>

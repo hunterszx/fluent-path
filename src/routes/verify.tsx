@@ -13,7 +13,7 @@ const searchSchema = z.object({ email: z.string().email().optional() });
 
 export const Route = createFileRoute("/verify")({
   validateSearch: searchSchema,
-  head: () => ({ meta: [{ title: "Verificar e-mail — Lunari" }] }),
+  head: () => ({ meta: [{ title: "Verificar e-mail — Lunari" }, { name: "description", content: "Verificar e-mail na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:title", content: "Verificar e-mail — Lunari" }, { property: "og:description", content: "Verificar e-mail na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: VerifyPage,
 });
 

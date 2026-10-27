@@ -10,7 +10,7 @@ const searchSchema = z.object({ mode: z.enum(["login", "signup"]).optional() });
 
 export const Route = createFileRoute("/auth")({
   validateSearch: searchSchema,
-  head: () => ({ meta: [{ title: "Entrar — Lunari" }] }),
+  head: () => ({ meta: [{ title: "Entrar e criar conta — Lunari" }, { name: "description", content: "Entrar e criar conta na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:title", content: "Entrar e criar conta — Lunari" }, { property: "og:description", content: "Entrar e criar conta na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: AuthPage,
 });
 

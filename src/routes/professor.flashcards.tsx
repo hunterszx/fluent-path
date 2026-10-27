@@ -11,7 +11,8 @@ import {
   type Deck, type CefrLevel, type Visibility,
 } from "@/lib/flashcards-api";
 
-export const Route = createFileRoute("/professor/flashcards")({ component: Page });
+export const Route = createFileRoute("/professor/flashcards")({
+  head: () => ({ meta: [{ title: "Área do professor · Flashcards — Lunari" }, { name: "description", content: "Área do professor · Flashcards na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:title", content: "Área do professor · Flashcards — Lunari" }, { property: "og:description", content: "Área do professor · Flashcards na Lunari, plataforma de aprendizado de inglês com flashcards, pronúncia e aulas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }), component: Page });
 
 function Page() {
   const { user } = useAuth();

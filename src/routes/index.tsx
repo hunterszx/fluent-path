@@ -10,6 +10,8 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Flashcards inteligentes com repetição espaçada, feedback de pronúncia por IA e aulas particulares com desconto Premium." },
       { property: "og:title", content: "Lunari — Inglês fluente com IA e professores reais" },
       { property: "og:description", content: "Flashcards, IA de pronúncia e aulas — em um app moderno." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: LandingPage,
